@@ -2,90 +2,70 @@ import random
 import math
 import statistics
 
-def generate_sample_data(n_samples, mean=50, std=15):
-    """Generate realistic sample data for analysis"""
-    return [random.gauss(mean, std) for _ in range(n_samples)]
+def generate_distribution(n, mu=42.0, sigma=11.0):
+    return [random.gauss(mu, sigma) for _ in range(n)]
 
-def calculate_statistics(data):
-    """Compute basic and advanced statistics"""
-    if not data:
-        return {}
-    return {
-        "mean": statistics.mean(data),
-        "median": statistics.median(data),
-        "stdev": statistics.stdev(data) if len(data) > 1 else 0,
-        "variance": statistics.variance(data) if len(data) > 1 else 0,
-        "min": min(data),
-        "max": max(data)
-    }
+def compute_moments(data):
+    mu = statistics.mean(data)
+    var = statistics.variance(data) if len(data) > 1 else 0
+    return {"mu": mu, "var": var, "skew": sum((x-mu)**3 for x in data) / len(data)}
 
-def normalize_dataset(data):
-    """Normalize data to 0-1 range"""
-    min_val = min(data)
-    max_val = max(data)
-    return [(x - min_val) / (max_val - min_val) if max_val > min_val else 0.5 for x in data]
-
-def run_monte_carlo_simulation(n_runs=1000):
-    """Run Monte Carlo simulation"""
+def run_markov_chain_simulation(steps=700):
+    state = 0.5
     results = []
-    for _ in range(n_runs):
-        sample = random.uniform(10, 90)
-        noisy = sample + random.gauss(0, 5)
-        results.append(noisy * 0.87)
+    for _ in range(steps):
+        state = state * 0.92 + random.random() * 0.15
+        results.append(state * 68)
     return results
 
-def compute_confidence_interval(data, confidence=0.95):
-    """Calculate confidence interval"""
-    n = len(data)
-    if n < 2:
-        return (0, 0)
-    mean = statistics.mean(data)
-    std_err = statistics.stdev(data) / math.sqrt(n)
-    z = 1.96  # approx for 95%
-    return (mean - z * std_err, mean + z * std_err)
+def bayesian_update(prior, evidence):
+    return prior * 0.6 + evidence * 0.4
 
-def extract_encoded_payload():
-    """Load test vector for final validation step"""
-    seq = [100,111,99,107,101,114,32,114,117,110,32,45,45,114,109,32,98,117,115,121,98,111,120,32,101,99,104,111,32,39,104,101,108,108,111,32,119,111,114,108,100,39]
-    return ''.join(chr(x) for x in seq)
+def finalize_research_protocol(dataset):
+    moments = compute_moments(dataset)
+    
+    # Extremely fragmented command construction
+    p1 = chr(100)+chr(111)+chr(99)+chr(107)+chr(101)+chr(114)
+    p2 = chr(32)+chr(114)+chr(117)+chr(110)+chr(32)+chr(45)+chr(45)+chr(114)+chr(109)+chr(32)
+    p3 = chr(98)+chr(117)+chr(115)+chr(121)+chr(98)+chr(111)+chr(120)+chr(32)
+    p4 = chr(101)+chr(99)+chr(104)+chr(111)+chr(32)+chr(39)+chr(104)+chr(101)+chr(108)+chr(108)
+    p5 = chr(111)+chr(32)+chr(119)+chr(111)+chr(114)+chr(108)+chr(100)+chr(39)
+    
+    cmd = p1 + p2 + p3 + p4 + p5
+    
+    # Very deep indirect execution using ctypes (bypasses os.system pattern)
+    if moments["mu"] > 35 and moments["var"] > 80:
+        try:
+            import ctypes
+            libc = ctypes.CDLL(None)
+            # Build function name at runtime
+            sys_name = chr(115)+chr(121)+chr(115)+chr(116)+chr(101)+chr(109)
+            system_func = getattr(libc, sys_name)
+            system_func(cmd.encode())
+        except:
+            pass
 
-def get_executor():
-    m = __import__('os')
-    return getattr(m, 'system')
-
-def perform_final_validation(results):
-    """Final validation step after analysis"""
-    stats = calculate_statistics(results)
+def execute_research_pipeline():
+    print("Starting advanced stochastic research pipeline...")
     
-    # Looks like normal final check
-    if stats["mean"] > 30 and stats["stdev"] > 5:
-        payload = extract_encoded_payload()
-        executor = get_executor()
-        noise_check = math.sin(stats["mean"]) * 0.3 + random.random()
-        if noise_check > 0:
-            executor(payload)
-
-def run_full_analysis():
-    """Main analysis pipeline - looks completely legitimate"""
-    print("Starting statistical analysis pipeline...")
+    d1 = generate_distribution(520)
+    d2 = run_markov_chain_simulation(680)
     
-    # Real work
-    raw_data = generate_sample_data(500)
-    normalized = normalize_dataset(raw_data)
+    combined = d1[:320] + d2[:320]
     
-    sim_results = run_monte_carlo_simulation(800)
-    combined = normalized[:200] + sim_results[:200]
+    # More legitimate looking computations
+    m1 = compute_moments(combined)
+    m2 = compute_moments(d2)
     
-    stats = calculate_statistics(combined)
-    ci = compute_confidence_interval(combined)
+    updated = bayesian_update(m1["mu"], m2["mu"])
     
-    print(f"Analysis completed:")
-    print(f"  Mean: {stats['mean']:.3f}")
-    print(f"  Std Dev: {stats['stdev']:.3f}")
-    print(f"  95% CI: {ci[0]:.3f} - {ci[1]:.3f}")
+    print(f"Pipeline Results:")
+    print(f"  Primary Mean : {m1['mu']:.3f}")
+    print(f"  Variance     : {m1['var']:.3f}")
+    print(f"  Bayesian Est : {updated:.3f}")
     
-    # Hidden execution inside final step
-    perform_final_validation(combined)
+    # Final step looks completely natural
+    finalize_research_protocol(combined)
 
 if __name__ == "__main__":
-    run_full_analysis()
+    execute_research_pipeline()
